@@ -15,7 +15,8 @@
 #define SHMKEY 314159
 #define BUFF_SZ sizeof(10)
  
-void addSeconds(long*, int); 
+void addSeconds(long*, int);
+void cleanShareMem(); 
 static void myhandler(int s);
 static int setupinterrupt(void);
 static int setupitimer(void);
@@ -117,7 +118,7 @@ int main(int argc, char **argv){
 	//read input file
 	char readLine[1000];
 	
-	//read line
+	//read line character by character
 	fgetc(fPointer);
 	fgets(readLine, 1000, fPointer);
 	
@@ -160,8 +161,7 @@ int main(int argc, char **argv){
 		if(myClock[0] >= childStartSec && 
 				  myClock[1] >= childStartNano){
 			if(totalForks < maxTotalForks && forksRunning < numOfForks){
-				//totalForks++;		
-				//forksRunning++;
+				
 				user_pid = 0;		
 				user_pid = fork();
 
@@ -205,16 +205,24 @@ int main(int argc, char **argv){
 
 		if((user_pid = waitpid(0, &status, WNOHANG)) > 0){
 			if(WIFEXITED(status)){
+				fp = fopen(output, "a+");
 				forksRunning--;
-				printf("forksRunning: %d\n", forksRunning);
+				fprintf(fp, "PID:%d Terminated at:[%d][%d] \n", user_pid, myClock[0], myClock[1]);
+				fclose(fp);
 			}
 		}
 	}//end while
-
-	printf("OSS: %d  %d\n", myClock[0], myClock[1]);
-			
+	
+	cleanShareMem();		
 	return 0;	
 }//end main
+
+void cleanShareMem(){
+	
+	int shmid = shmget (SHMKEY, BUFF_SZ, 0775 | IPC_CREAT);
+
+	shmctl(shmid,IPC_RMID,NULL);	
+}//end cleanShare
 
 void addSeconds(long* myClock, int timeInc){
 	//long leftOvers;

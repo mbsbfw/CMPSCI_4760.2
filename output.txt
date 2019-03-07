@@ -1,0 +1,6 @@
+PID: 1230 timeLaunched: [0] [2000000] duration: 375891 
+PID: 1231 timeLaunched: [0] [3882510] duration: 5000000 
+PID:1230 Terminated at:[0][3882510] 
+PID: 1232 timeLaunched: [0] [5517362] duration: 375620 
+PID:1232 Terminated at:[0][7375404] 
+PID:1231 Terminated at:[0][11021063] 
