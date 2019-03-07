@@ -1,0 +1,18 @@
+>By: Michael Sago
+>COMP_SCI 4760
+>Operating Systems Project 
+>Concurrent UNIX Processes and Shared Memory
+>written in C
+
+This program works with using getopt() for command line arguments, shared memory, creating simulated clock, reading/writing to and from files, and fork/exec...
+
+In this program there will be two executable files(oss and user). Oss will be in charge of launching a specific number of of child processes at various times which are read in from another file. User will be given a command line argument when they were execed off which will be the duration for which that child process will run.
+
+Shared memory is set up to communicate between the two processes and it is holding two integers that represents the simulated clock; one for seconds and another for nano seconds. 
+
+Valid Execution:  1.$ make
+						2.$ ./oss -n X -s Y -i -o 
+						>x is an integer indicating maximum total of child processes
+						>y is an integer indicating how many shildren are allowed to exist at the same time  
+						>-i to specify input file
+						>-o to specify outputfile

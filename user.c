@@ -12,10 +12,12 @@
 #define SHMKEY 314159
 #define BUFF_SZ sizeof(2) 
 
+void addSeconds(long* myClock);
+
 int main(int argc, char **argv){
 
-	int addTimeInc;
-	addTimeInc = atoi(argv[1]);
+	long duration;
+	duration = atol(argv[1]);
 
 	int shmid = shmget ( SHMKEY, BUFF_SZ, 0775);
 
@@ -27,23 +29,33 @@ int main(int argc, char **argv){
 
 	/*attach the given shared memory segment, at a free position
 	 that will be allocated by the system*/
-	int * myClock = (int *)(shmat(shmid, 0, 0 ));
-	
+	long * myClock = (long *)(shmat(shmid, 0, 0 ));
+		
 	int i;
-	for(i = 0; i < addTimeInc; i++){
-		myClock[1] = myClock[1] + .1;
 
-		if(myClock[1] == 999999999){
-			myClock[0] == myClock[0] + 1;
-			myClock[1] = 0;
-		}
+	//read clock and add duration to it
+	for(i = 0; i < duration; i++){
+		myClock[1] = myClock[1] + 1;
+
+		addSeconds(myClock);
 	}
 
+	fprintf(stdout, "PID: %d - clock: [%d][%d] - Child TERMINATING\n", getpid(), myClock[0], myClock[1]);
 	
-	printf("CHILD_PID: %i - Time Increment: %d\n", getpid(), addTimeInc);
-		
-	return 0;	
+	shmdt(myClock);	
+	exit(EXIT_SUCCESS);	
 }//end main
 
+void addSeconds(long * myClock){
+	long leftOvers;
+	long remainder;
+
+	if(myClock[1] > 999999999){
+		leftOvers = myClock[1]/1000000000;
+		myClock[0] = myClock[0] + leftOvers;
+		remainder = myClock[1] % 1000000000;
+		myClock[1] = remainder;
+	}
+}
 
 
